@@ -25,12 +25,45 @@ canvas {
   
 label {
     display: block;
+    width: 100%
 }
 
 .slider {
     width: 100%;
     margin-bottom: 20px;
+    -webkit-appearance: none; 
+    appearance: none;
+    height: 15px;
+    border-radius: 20px;
+    background: rgb(7, 50, 48);
+    outline: none;
+    opacity: 0.85;
 }
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider:disabled {
+    opacity: 0.3;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 15px;
+    background: rgb(127, 206, 202);
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: rgb(127, 206, 202);
+    cursor: pointer;
+  }
 
 button {
     width: 100%;
@@ -39,7 +72,8 @@ button {
     border: none;
     height: 30px;
     border-radius: 20px;
-    font-size: 20px
+    font-size: 20px;
+    margin-top: 10px;
 }
 
 button:disabled {
