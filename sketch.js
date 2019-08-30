@@ -5,45 +5,50 @@ class Point {
     }
 }
 
-const width = 3860;
-const height = 2160;
-const shrinkFactor = 0.9;
-const maxLength = 180, minLength = 40;
+const config = {
+    minBranchLength: 40,
+    maxBranchLength: 100,
+    splitAngle: 36,
+    shrinkFactor: 0.92
+}
 
+const width = window.innerWidth;
+const height = window.innerHeight * 0.9;
 
 function setup() {
     const radius = treeRadius() + 300;
     const center = new Point(width/2, height/2);
     createCanvas(width, height);
-    let startingPoints = [];
-    for(let i = 0; i < 70; i++){
+   /*  let startingPoints = [];
+    for(let i = 0; i < 40; i++){
         startingPoints.push(new Point(center.x + (Math.random()* (radius + radius) - radius), center.y + (Math.random()* (radius + radius) - radius)));
     }
     startingPoints.sort((p1, p2) => p1.y - p2.y)
-                  .forEach(point => drawFractal(point, parseInt(Math.random() * (maxLength - minLength) + minLength), 90));
+                  .forEach(point => drawFractal(point, parseInt(Math.random() * (config.maxBranchLength - config.minBranchLength) + config.minBranchLength), 90)); */
+    drawFractal(new Point(width/2, height), config.maxBranchLength, 90);
 }
 
 function draw() {
 }
 
 function treeRadius() {
-    let length = maxLength;
+    let length = config.maxBranchLength;
     let radius = 0;
-    while(length > 40 ) {
+    while(length > config.minBranchLength) {
         radius += length;
-        length *= shrinkFactor;
+        length *= config.shrinkFactor;
     }
     return radius;
 }
 
 function drawFractal(start, length, angle){
-    if (length > minLength) {
+    if (length > config.minBranchLength) {
         const nextPoint = calcNextPoint(start, length, angle)
         setDesign(length);
         line(start.x, start.y, nextPoint.x, nextPoint.y);
-        drawFractal(nextPoint, length * shrinkFactor, (angle +  Math.random() * 36) % 360);
+        drawFractal(nextPoint, length * config.shrinkFactor, (angle +  Math.random() * config.splitAngle) % 360);
         setDesign(length);
-        drawFractal(nextPoint, length * shrinkFactor, (angle - Math.random() * 36) % 360);
+        drawFractal(nextPoint, length * config.shrinkFactor, (angle - Math.random() * config.splitAngle) % 360);
     }
 }
 const setDesign = (length) => {
@@ -59,7 +64,7 @@ const calcNextPoint = (point, length, angle) => {
 };
 
 const calcDesign = (length) => {
-    const dynamicDiff = (length - minLength) / (maxLength - minLength);
+    const dynamicDiff = (length - config.minBranchLength) / (config.maxBranchLength - config.minBranchLength);
     const brown = {red: Math.random() * 20 + 155, green: Math.random() * 20 + 32, blue: Math.random() * 20 + 32};
     const leaf = {red: Math.random() * 20 + 0, green: Math.random() * 20 + 155, blue: 0};
     return {
