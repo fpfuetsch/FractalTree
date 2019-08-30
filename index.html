@@ -1,31 +1,36 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
-    <script src="index.js"></script>
-    <script src="sketch.js"></script>
     <link href="style.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
     <div id="controls">
+      <h1>Fractal Tree Generator</h1>
       <label>
-        <input type="range" id="maxLengthSlider">
         max. Length
+        <input class="slider" type="range" id="maxLengthSlider" min="100" max="200" value="150">
       </label>
       <label>
-        <input type="range" id="minLengthSlider">
         min. Length
+        <input class="slider" type="range" id="minLengthSlider" min="30" max="50" value="40">
       </label>
       <label>
-        <input type="range" id="splitAngleSlider">
         Angle
+        <input class="slider" type="range" id="splitAngleSlider" min="10" max="20" value="15">
       </label>
       <label>
-        <input type="range" id="shrinkFactorSlider">
         Shrink Factor
+        <input class="slider" type="range" id="shrinkFactorSlider" min="86" max="90" value="88">
       </label>
-    </div>
+      <label>
+        Thiccness
+        <input class="slider" type="range" id="thiccSlider" min="20" max="400" value="60">
+      </label>
+      <button id="growBtn">Let it grow!</button>
+      </div>
+    <script src="sketch.js"></script>
   </body>
 </html>

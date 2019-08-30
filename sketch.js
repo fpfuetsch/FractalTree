@@ -5,50 +5,82 @@ class Point {
     }
 }
 
-const config = {
-    minBranchLength: 40,
-    maxBranchLength: 100,
-    splitAngle: 36,
-    shrinkFactor: 0.92
+const maxLengthSlider = document.getElementById('maxLengthSlider');
+const minLengthSlider = document.getElementById('minLengthSlider');
+const splitAngleSlider = document.getElementById('splitAngleSlider');
+const shrinkFactorSlider = document.getElementById('shrinkFactorSlider');
+const thiccSlider = document.getElementById('thiccSlider');
+const sliders = Array.from(document.getElementsByClassName('slider'));
+const growBtn = document.getElementById('growBtn');
+
+const getConfiguration = () => {
+    return {
+        minBranchLength: parseInt(minLengthSlider.value),
+        maxBranchLength: parseInt(maxLengthSlider.value),
+        splitAngle: parseInt(splitAngleSlider.value),
+        shrinkFactor: parseInt(shrinkFactorSlider.value) / 100,
+        thiccFactor: parseInt(thiccSlider.value)
+    }
 }
 
-const width = window.innerWidth;
-const height = window.innerHeight * 0.9;
+let config;
 
 function setup() {
-    const radius = treeRadius() + 300;
-    const center = new Point(width/2, height/2);
+    sliders.forEach(el => el.addEventListener('input', () => {
+            config = getConfiguration();
+            drawNewTree();
+        }));
+    growBtn.addEventListener('click', growTree);
+
+    const width = window.innerWidth * 0.9;
+    const height = window.innerHeight;
     createCanvas(width, height);
-   /*  let startingPoints = [];
-    for(let i = 0; i < 40; i++){
-        startingPoints.push(new Point(center.x + (Math.random()* (radius + radius) - radius), center.y + (Math.random()* (radius + radius) - radius)));
-    }
-    startingPoints.sort((p1, p2) => p1.y - p2.y)
-                  .forEach(point => drawFractal(point, parseInt(Math.random() * (config.maxBranchLength - config.minBranchLength) + config.minBranchLength), 90)); */
+    
+    config = getConfiguration();
+    drawNewTree();
+}
+
+const drawNewTree = () => {
+    clear();
     drawFractal(new Point(width/2, height), config.maxBranchLength, 90);
 }
 
-function draw() {
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
-function treeRadius() {
-    let length = config.maxBranchLength;
-    let radius = 0;
-    while(length > config.minBranchLength) {
-        radius += length;
-        length *= config.shrinkFactor;
+const growTree = async () => {
+    sliders.forEach(slider => slider.disabled = true);
+    growBtn.disabled = true;
+    const targetMaxLength = config.maxBranchLength;
+    const targetTHICCness = config.thiccFactor;
+    const targetAngle = config.splitAngle - 5;
+    const lengthDifferenceFactor = config.minBranchLength / config.maxBranchLength;
+    const growCycles = 100;
+    let currentMaxLength = 0, currentTHICCness = 0, currentAngle = 0;
+    for(let i = 1; i <= growCycles; i++){
+        await sleep(5000 / growCycles)
+        currentMaxLength = i * targetMaxLength / growCycles;
+        currentTHICCness = i * targetTHICCness / growCycles;
+        currentAngle = i * targetAngle / growCycles + 5;
+        config.maxBranchLength = currentMaxLength;
+        config.thiccFactor = currentTHICCness;
+        config.splitAngle = currentAngle;
+        config.minBranchLength = currentMaxLength * lengthDifferenceFactor;
+        drawNewTree();
     }
-    return radius;
+    sliders.forEach(slider => slider.disabled = false);
+    growBtn.disabled = false;
 }
 
-function drawFractal(start, length, angle){
+const drawFractal = (start, length, angle) => {
     if (length > config.minBranchLength) {
         const nextPoint = calcNextPoint(start, length, angle)
         setDesign(length);
         line(start.x, start.y, nextPoint.x, nextPoint.y);
-        drawFractal(nextPoint, length * config.shrinkFactor, (angle +  Math.random() * config.splitAngle) % 360);
+        drawFractal(nextPoint, length * config.shrinkFactor, (angle + config.splitAngle) % 360);
         setDesign(length);
-        drawFractal(nextPoint, length * config.shrinkFactor, (angle - Math.random() * config.splitAngle) % 360);
+        drawFractal(nextPoint, length * config.shrinkFactor, (angle - config.splitAngle) % 360);
     }
 }
 const setDesign = (length) => {
@@ -71,6 +103,6 @@ const calcDesign = (length) => {
         red: (brown.red -  leaf.red) * dynamicDiff + leaf.red,
         green: (brown.green -  leaf.green) * dynamicDiff + leaf.green,
         blue: (brown.blue -  leaf.blue) * dynamicDiff + leaf.blue,
-        weight: 333 * dynamicDiff
+        weight: config.thiccFactor * dynamicDiff
      };
 }
